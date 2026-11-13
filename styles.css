@@ -148,7 +148,7 @@ h3{font-size:24px;font-weight:700;margin:0;letter-spacing:-.01em}
 .container:hover{box-shadow:0 0 60px color-mix(in srgb,var(--acc) 30%,transparent)}
 .container__icon{width:100px;color:var(--acc)}
 .container__icon .lid{transform-origin:102px 34px;transition:transform .6s cubic-bezier(.3,1.5,.5,1)}
-.container[aria-expanded="true"] .container__icon .lid{transform:rotate(-28deg) translate(-4px,-10px)}
+.container[aria-expanded="true"] .container__icon .lid{transform:translateY(-32.484px) rotate(-28deg) translate(-4px,-10px)}
 .container__label{font-size:18px;font-weight:700}
 .container .mono{font-size:10.5px}
 /* WORKSHOP */
