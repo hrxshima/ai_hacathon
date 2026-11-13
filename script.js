@@ -521,7 +521,6 @@ function updateActive() {
   document.documentElement.style.setProperty('--acc', cur.dataset.accent);
   $$('.loc-nav a').forEach(a => a.classList.toggle('is-on', a.dataset.nav === cur.dataset.loc));
   $('#topbarLoc').textContent = cur.dataset.label;
-  audio.setScene(cur.dataset.loc);
 }
 function parallax() {
   if (reduced) return;
@@ -567,44 +566,40 @@ sec.addEventListener('click', e => {
   if (sec.classList.contains('needs-play') && !e.target.closest('button, a')) playPrologue();
 });
 
-/* ---------- звук: синтезируется в браузере ---------- */
+/* ---------- звук: MP3-фон и короткие эффекты действий ---------- */
 const audio = (() => {
-  let ctx = null, master, hum, pad = [], padGain, noiseGain, noiseFilter, on = false, scene = 'prologue';
-  const SCENES = {
-    prologue: { hum: .012, pad: [110, 164.8], padG: .018, noise: .02, nf: 300 },
-    fitting:  { hum: .010, pad: [220, 277.2], padG: .022, noise: .004, nf: 800 },
-    shop:     { hum: .030, pad: [164.8, 174.6], padG: .016, noise: .006, nf: 1200 },
-    waste:    { hum: .008, pad: [55, 82.4], padG: .03, noise: .04, nf: 180 },
-    workshop: { hum: .016, pad: [146.8, 220], padG: .02, noise: .006, nf: 600 },
-    industry: { hum: .010, pad: [196, 246.9], padG: .018, noise: .004, nf: 700 },
-    final:    { hum: .006, pad: [261.6, 392], padG: .02, noise: .002, nf: 900 }
-  };
-  function noiseBuffer() {
-    const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = b.getChannelData(0);
-    let last = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
-    return b;
+  const track = $('#ambientAudio');
+  track.volume = 0.6;
+  let ctx = null, master = null, on = false, revision = 0;
+  async function setEnabled(enabled) {
+    const request = ++revision;
+    on = enabled;
+    if (!enabled) {
+      track.pause();
+      if (ctx) master.gain.setTargetAtTime(0, ctx.currentTime, .08);
+      return;
+    }
+    // Keep native media playback for local-file previews as well as hosted sites.
+    // No fetch() or AudioContext is required to play the supplied track.
+    const Context = window.AudioContext || window.webkitAudioContext;
+    if (!ctx && Context) {
+      try {
+        ctx = new Context(); master = ctx.createGain();
+        master.gain.value = 0; master.connect(ctx.destination);
+      } catch { ctx = null; }
+    }
+    if (ctx) ctx.resume().catch(() => {});
+    try {
+      await track.play();
+      if (request !== revision) { if (!on) track.pause(); return; }
+      if (ctx) master.gain.setTargetAtTime(1, ctx.currentTime, .08);
+    } catch (error) {
+      if (request !== revision) return;
+      on = false;
+      if (ctx) master.gain.setTargetAtTime(0, ctx.currentTime, .08);
+      throw error;
+    }
   }
-  function init() {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
-    hum = ctx.createGain(); hum.connect(master);
-    [100, 200, 300, 400].forEach((f, i) => { const o = ctx.createOscillator(); o.frequency.value = f; const g = ctx.createGain(); g.gain.value = [1, .5, .25, .12][i]; o.connect(g).connect(hum); o.start(); });
-    padGain = ctx.createGain(); const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
-    padGain.connect(lp).connect(master);
-    for (let i = 0; i < 2; i++) { const o = ctx.createOscillator(); o.type = 'triangle'; o.connect(padGain); o.start(); pad.push(o);
-      const lfo = ctx.createOscillator(); lfo.frequency.value = .07 + i * .05; const lg = ctx.createGain(); lg.gain.value = 1.5; lfo.connect(lg).connect(o.detune); lfo.start(); }
-    const n = ctx.createBufferSource(); n.buffer = noiseBuffer(); n.loop = true;
-    noiseFilter = ctx.createBiquadFilter(); noiseFilter.type = 'lowpass';
-    noiseGain = ctx.createGain(); n.connect(noiseFilter).connect(noiseGain).connect(master); n.start();
-  }
-  function setScene(s) {
-    scene = s; if (!ctx) return;
-    const c = SCENES[s] || SCENES.prologue, t = ctx.currentTime;
-    hum.gain.setTargetAtTime(c.hum, t, .8); padGain.gain.setTargetAtTime(c.padG, t, .8);
-    pad.forEach((o, i) => o.frequency.setTargetAtTime(c.pad[i], t, 1.2));
-    noiseGain.gain.setTargetAtTime(c.noise, t, .8); noiseFilter.frequency.setTargetAtTime(c.nf, t, .8);
-  }
-  function toggle() { if (!ctx) init(); on = !on; ctx.resume(); master.gain.setTargetAtTime(on ? 1 : 0, ctx.currentTime, .3); setScene(scene); return on; }
   function blip(type) {
     if (!ctx || !on) return;
     const t = ctx.currentTime;
@@ -622,13 +617,30 @@ const audio = (() => {
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(P[2], t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + P[3]);
     o.connect(g).connect(master); o.start(t); o.stop(t + P[3] + .05);
   }
-  return { toggle, setScene, blip };
+  return { setEnabled, blip };
 })();
 function sfx(t) { audio.blip(t); }
-$('#soundBtn').addEventListener('click', (e) => {
-  const on = audio.toggle(), b = e.currentTarget;
-  b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Выключить звук' : 'Включить звук');
+function showSoundState(on) {
+  const b = $('#soundBtn');
+  b.setAttribute('aria-pressed', on);
+  b.setAttribute('aria-label', on ? 'Выключить звук' : 'Включить звук');
   $('#soundLabel').textContent = on ? 'ЗВУК ВКЛ' : 'ЗВУК ВЫКЛ';
+}
+let soundRequest = 0;
+$('#soundBtn').addEventListener('click', async (e) => {
+  const b = e.currentTarget, request = ++soundRequest;
+  const on = b.getAttribute('aria-pressed') !== 'true';
+  b.removeAttribute('title'); showSoundState(on);
+  try { await audio.setEnabled(on); }
+  catch {
+    if (request !== soundRequest) return;
+    showSoundState(false);
+    b.title = 'Не удалось включить звук. Нажмите, чтобы повторить.';
+  }
+});
+$('#ambientAudio').addEventListener('error', () => {
+  ++soundRequest; audio.setEnabled(false); showSoundState(false);
+  $('#soundBtn').title = 'Не удалось загрузить музыку. Нажмите, чтобы повторить.';
 });
 
 /* ---------- init ---------- */
