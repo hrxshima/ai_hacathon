@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PICK ME AGAIN — интерактивная история о циркулярной моде</title>
+<meta name="description" content="Интерактивная история о циркулярной моде: что случается с одеждой после того, как мы перестаём её носить.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=de92298a95">
+</head>
+<body>
+
+<a class="skip" href="#fitting">Пропустить видео</a>
+<div class="grain" aria-hidden="true"></div>
+<div class="tube" aria-hidden="true"></div>
+
+<nav class="loc-nav" aria-label="Локации">
+  <a href="#prologue" data-nav="prologue"><span>00 ПРОЛОГ</span><i></i></a>
+  <a href="#fitting" data-nav="fitting"><span>01 PICK ME!</span><i></i></a>
+  <a href="#shop" data-nav="shop"><span>02 FOLLOW THE TREND</span><i></i></a>
+  <a href="#waste" data-nav="waste"><span>03 THROW ME AWAY</span><i></i></a>
+  <a href="#workshop" data-nav="workshop"><span>04 PICK ME AGAIN</span><i></i></a>
+  <a href="#industry" data-nav="industry"><span>НЕ ТОЛЬКО ГАРДЕРОБ</span><i></i></a>
+  <a href="#final" data-nav="final"><span>05 THE SECOND LIFE</span><i></i></a>
+</nav>
+<div class="topbar">
+  <span class="topbar__logo">PICK ME AGAIN</span>
+  <span class="topbar__loc mono" id="topbarLoc">00 · ПРОЛОГ</span>
+  <button class="sound" id="soundBtn" aria-pressed="false" aria-label="Включить звук">
+    <span class="sound__bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="mono" id="soundLabel">ЗВУК ВЫКЛ</span>
+  </button>
+</div>
+
+<!-- всплывающая карточка источника -->
+<div class="srcpop" id="srcPop" role="dialog" aria-label="Источник" hidden>
+  <span class="mono acc" id="srcPopId"></span>
+  <b id="srcPopTitle"></b>
+  <span class="dim" id="srcPopPub"></span>
+  <a id="srcPopLink" href="#" target="_blank" rel="noopener noreferrer">Открыть источник →</a>
+  <button class="srcpop__close" id="srcPopClose" aria-label="Закрыть">×</button>
+</div>
+
+<main>
+
+<!-- 00 ПРОЛОГ -->
+<section id="prologue" class="loc loc--prologue" data-loc="prologue" data-accent="#F3A9C8" data-label="00 · ПРОЛОГ">
+  <div class="prologue__media">
+    <video id="prologueVideo" muted playsinline webkit-playsinline autoplay preload="auto" poster="assets/video/first.webp" aria-label="Видеопролог: из горы выброшенной одежды поднимается кукла-манекен">
+      <source src="assets/video/prologue.mp4" type="video/mp4">
+    </video>
+    <img class="prologue__still" src="assets/video/last.webp" alt="" aria-hidden="true">
+  </div>
+  <div class="prologue__meta mono"><span class="rec">● REC</span> <span id="recTime">00:00:00</span></div>
+  <div class="prologue__title">
+    <p class="mono kicker">ИНТЕРАКТИВНАЯ ИСТОРИЯ О ЦИРКУЛЯРНОЙ МОДЕ</p>
+    <h1>PICK ME<br>AGAIN</h1>
+    <p class="lead">Конец носки — не конец истории.</p>
+    <button class="replay mono" id="replayBtn">↺ ПОВТОРИТЬ ВИДЕО</button>
+  </div>
+  <a class="scrolldown mono" href="#fitting">Листай, чтобы узнать, что случается с одеждой дальше
+    <svg aria-hidden="true" width="14" height="22" viewBox="0 0 14 22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 1v19M1 14l6 6 6-6"/></svg></a>
+</section>
+
+<div class="threshold threshold--curtain" style="--acc:#F3A9C8">
+  <div class="curtain curtain--l" aria-hidden="true"></div><div class="curtain curtain--r" aria-hidden="true"></div>
+  <p class="band">У каждой вещи есть история. И далеко не всегда она заканчивается в тот момент, когда мы перестаём её носить.</p>
+</div>
+
+<!-- 01 ПРИМЕРОЧНАЯ -->
+<section id="fitting" class="loc loc--fitting" data-loc="fitting" data-accent="#F3A9C8" data-label="01 · PICK ME!">
+  <div class="bg parallax" style="--bg:url('assets/backgrounds/fitting.webp')"></div>
+  <div class="loc__inner fitting">
+    <div class="fitting__text reveal">
+      <div class="sign mono"><b>↑</b> 01 · ПРИМЕРОЧНАЯ</div>
+      <h2 class="h-loc">PICK ME!</h2>
+      <p class="sub">Гардероб, который ждёт продолжения</p>
+      <p class="voice">«Когда-то я носила эти вещи постоянно. Теперь одни порвались, другие потеряли форму, а некоторые просто надоели. Но обязательно ли избавляться от них?»</p>
+      <p class="instr">Выбери вещь — узнай, что с ней случилось. Решить её судьбу можно будет в мастерской.</p>
+      </div>
+    <div class="fitting__doll reveal"><div class="doll" id="dollFitting"></div></div>
+    <div class="items fitting__selection reveal" id="fitItems" role="group" aria-label="Вещи гардероба"></div>
+    <article class="panel fitting__card reveal" id="fitCard" aria-live="polite"></article>
+  </div>
+</section>
+
+<div class="threshold threshold--flicker" style="--acc:#E3D98A">
+  <p class="band">Прежде чем решить, что делать с одеждой, посмотрим, почему вещей вокруг нас становится всё больше.</p>
+</div>
+
+<!-- 02 МАГАЗИН -->
+<section id="shop" class="loc loc--shop" data-loc="shop" data-accent="#E3D98A" data-label="02 · FOLLOW THE TREND">
+  <div class="bg bg--top parallax" style="--bg:url('assets/backgrounds/shop.webp')"></div>
+  <div class="loc__inner">
+    <header class="loc__head reveal">
+      <div class="sign mono"><b>↑</b> 02 · МАГАЗИН</div>
+      <h2 class="h-loc">FOLLOW<br>THE TREND</h2>
+      <p class="sub">Почему одежды становится больше, а носим мы её меньше?</p>
+    </header>
+    <div class="intro reveal">
+      <p>Мода меняется, вещи покупают и перестают носить. В линейной модели история обычно выглядит так: произвести, использовать, выбросить. Циркулярный подход предлагает другие пути — продлить использование, отремонтировать, передать или, когда это возможно, переработать материал.</p>
+      <div class="sxs"><button class="sx" data-src="S01">S01</button> <button class="sx" data-src="S05">S05</button></div>
+    </div>
+
+    <div class="zone" id="zone1">
+      <div class="stats2">
+        <div class="panel stat reveal">
+          <div class="stat__num">×<span class="count" data-to="2">0</span></div>
+          <p class="stat__cap">С 2000 по 2015 год мировое производство одежды удвоилось.</p>
+          <div class="sxs"><button class="sx" data-src="S05">S05</button></div>
+        </div>
+        <div class="panel stat reveal">
+          <div class="stat__num">−<span class="count" data-to="36">0</span><small>%</small></div>
+          <p class="stat__cap">За тот же период оценочное число использований одной вещи до выбытия сократилось на 36%.</p>
+          <p class="stat__exp">В этом исследовании рост производства сопровождался сокращением использования одежды.</p>
+          <div class="sxs"><button class="sx" data-src="S05">S05</button></div>
+        </div>
+      </div>
+      <div class="stepper reveal"><span class="mono">1 / 2</span><a class="btn btn--ghost" href="#zone2">Дальше ↓</a></div>
+    </div>
+
+    <div class="zone" id="zone2">
+      <div class="stats2">
+        <div class="panel stat reveal">
+          <div class="stat__num"><span class="count" data-to="92">0</span><small>млн тонн</small></div>
+          <p class="stat__cap">Столько текстильных отходов, по оценке UNEP, ежегодно образуется в мире.</p>
+          <p class="stat__exp">Речь о текстильных отходах в целом, а не только о выброшенных футболках и джинсах.</p>
+          <div class="sxs"><button class="sx" data-src="S17">S17</button></div>
+        </div>
+        <div class="panel stat reveal">
+          <div class="stat__num"><span class="count" data-to="5">0</span><small>млн тонн</small></div>
+          <p class="stat__cap">По информации Европейской комиссии, примерно столько одежды ежегодно выбрасывают в ЕС.</p>
+          <div class="sxs"><button class="sx" data-src="S02">S02</button></div>
+        </div>
+      </div>
+      <div class="stepper reveal"><span class="mono">2 / 2</span></div>
+    </div>
+
+    <div class="panel model reveal" id="model">
+      <h3>Линейная / циркулярная</h3>
+      <div class="toggle mono" role="group" aria-label="Модель">
+        <button data-model="linear" aria-pressed="false">ЛИНЕЙНАЯ</button>
+        <button data-model="circular" aria-pressed="true" class="is-on">ЦИРКУЛЯРНАЯ</button>
+      </div>
+      <div class="chain chain--linear">
+        <span>Произвести</span><i>→</i><span>Использовать</span><i>→</i><span class="end">Выбросить</span>
+      </div>
+      <div class="chain chain--circular">
+        <span>Дольше носить</span><i>→</i><span>Ремонтировать</span><i>→</i><span>Передать / перепродать</span><i>→</i><span>Переделать</span><i>→</i><span>При возможности переработать материал</span>
+      </div>
+      <p class="model__exp model__exp--linear">В этой схеме вещь после использования становится отходом.</p>
+      <p class="model__exp model__exp--circular">Это возможные пути продления жизни вещи и сохранения материала, а не обязательная последовательность шагов. Переработка не всегда возвращает текстиль в новую одежду.</p>
+    </div>
+  </div>
+</section>
+
+<div class="threshold threshold--dark" style="--acc:#C9B3F2">
+  <p class="band">А что происходит с вещью, когда она всё-таки покидает гардероб?</p>
+</div>
+
+<!-- 03 ОТХОДЫ -->
+<section id="waste" class="loc loc--waste" data-loc="waste" data-accent="#C9B3F2" data-label="03 · THROW ME AWAY">
+  <div class="bg bg--top parallax" style="--bg:url('assets/backgrounds/waste.webp')"></div>
+  <div class="loc__inner">
+    <header class="loc__head reveal">
+      <div class="sign mono"><b>↓</b> 03 · СВАЛКА ТЕКСТИЛЯ</div>
+      <h2 class="h-loc">THROW<br>ME AWAY</h2>
+      <p class="sub">Сдать в контейнер — ещё не значит переработать</p>
+    </header>
+    <div class="intro reveal">
+      <p>Что происходит с одеждой после того, как мы оставляем её в контейнере? Сначала вещи сортируют. Одни могут снова кому-то пригодиться, другие — стать сырьём для новых материалов. И далеко не всегда речь идёт о производстве новой одежды.</p>
+      <div class="sxs"><button class="sx" data-src="S05">S05</button> <button class="sx" data-src="S10">S10</button> <button class="sx" data-src="S17">S17</button></div>
+    </div>
+
+    <p class="instr reveal">Нажми на контейнер и посмотри, куда может отправиться одежда.</p>
+    <div class="routes reveal">
+      <button class="container panel" id="containerBtn" aria-expanded="false" aria-controls="routeList">
+        <svg aria-hidden="true" class="container__icon" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2">
+          <path class="lid" d="M18 34h84M50 34V24h20v10"/><path d="M24 34l8 74h56l8-74"/><path d="M48 52v40M60 52v40M72 52v40"/>
+        </svg>
+        <span class="container__label">Нажми на контейнер</span>
+      </button>
+      <div class="route-list" id="routeList"></div>
+    </div>
+
+    <article id="fiberComparison" class="fiber-comparison reveal" aria-labelledby="fiberTitle">
+      <h3 id="fiberTitle">Не вся переработанная ткань сделана из старой одежды</h3>
+      <p class="fiber-comparison__intro">В 2023 году около 8% мирового производства текстильных волокон приходилось на переработанное сырьё. Но менее 1% всех волокон производили из переработанного текстиля.</p>
+      <div class="fiber-comparison__cards">
+        <div class="panel fiber-card">
+          <h4><span class="fiber-card__number">≈8%</span><span>— волокна из переработанного сырья</span></h4>
+          <p>Например, из пластиковых бутылок.</p>
+        </div>
+        <div class="panel fiber-card">
+          <h4><span class="fiber-card__number">&lt;1%</span><span>— волокна из переработанного текстиля</span></h4>
+          <p>Из старой одежды и других текстильных изделий.</p>
+        </div>
+      </div>
+      <p class="fiber-comparison__conclusion">Надпись «из переработанных материалов» ещё не означает, что для создания вещи использовали старую одежду.</p>
+      <div class="sxs"><button class="sx" data-src="S17" aria-label="Источник UNEP, S17">S17 · UNEP</button></div>
+    </article>
+
+    <div class="russia">
+      <h3 class="reveal">Что происходит с текстилем в России?</h3>
+      <div class="cards2">
+        <div class="panel card reveal"><p>По оценке Российского экологического оператора, в России ежегодно образуется около 1,5 млн тонн текстильных отходов.</p><div class="sxs"><button class="sx" data-src="S14">S14</button> <button class="sx" data-src="S15">S15</button></div></div>
+        <div class="panel card reveal"><p>По информации РЭО, предприятие «Втор-Ком» в Челябинске за 2025 год переработало более 700 тонн бывшей в употреблении одежды. Из вторичного материала делают, в частности, наполнители, ватин и шумоизоляцию.</p><div class="sxs"><button class="sx" data-src="S11">S11</button></div></div>
+      </div>
+      <p class="note reveal">Техническая переработка позволяет использовать часть материалов повторно, но не обязательно возвращает их в гардероб.</p>
+    </div>
+
+    <article class="discount reveal">
+      <h3>Сдал старую вещь — получил скидку. Всегда ли это экологично?</h3>
+      <p>Не обязательно. Если скидка побуждает купить ещё одну новую вещь, программа сбора может одновременно стимулировать дополнительное потребление. Поэтому экологический эффект нужно оценивать, а не предполагать автоматически.</p>
+      <div class="sxs"><button class="sx" data-src="S05">S05</button> <button class="sx" data-src="S06">S06</button></div>
+    </article>
+  </div>
+</section>
+
+<div class="threshold threshold--green" style="--acc:#8BC83D">
+  <p class="band">Но что, если вещь ещё можно носить, просто ей нужен ремонт или новый фасон?</p>
+</div>
+
+<!-- 04 МАСТЕРСКАЯ -->
+<section id="workshop" class="loc loc--workshop" data-loc="workshop" data-accent="#8BC83D" data-label="04 · PICK ME AGAIN">
+  <div class="bg parallax" style="--bg:url('assets/backgrounds/workshop.webp')"></div>
+  <div class="loc__inner workshop">
+    <div class="workshop__left">
+      <div class="sign mono reveal"><b>↑</b> 04 · МАСТЕРСКАЯ</div>
+      <h2 class="h-loc reveal">PICK ME<br>AGAIN</h2>
+      <p class="sub reveal">Дай вещи второй шанс — или выбери для неё другой путь</p>
+      <p class="instr-d reveal">Выбери предмет гардероба. Посмотри доступные действия и реши, что с ним произойдёт. Каждую вещь можно отремонтировать или переделать.</p>
+    </div>
+    <div class="workshop__doll">
+      <div class="doll" id="dollWorkshop"></div>
+      <svg class="stitch" id="stitch" viewBox="0 0 300 300" aria-hidden="true"><path d="M20 150 C 80 60, 220 240, 280 150"/></svg>
+    </div>
+    <div class="workshop__selection">
+      <p class="mono acc progress reveal" id="progress">РЕШЕНО 0 / 4</p>
+      <div class="w-items reveal" id="wItems" role="group" aria-label="Выбери вещь"></div>
+      <div class="w-actions reveal">
+        <b id="wTitle"></b>
+        <div class="actions" id="wActions"></div>
+      </div>
+    </div>
+    <div class="workshop__result">
+      <article class="panel w-card" id="wCard" aria-live="polite"></article>
+      <button class="btn btn--acc next-item" id="nextItemBtn" disabled>Дальше →</button>
+    </div>
+  </div>
+</section>
+
+<div class="threshold threshold--green2" style="--acc:#8BC83D">
+  <p class="band">У вещей есть второй шанс. Но чтобы такие решения стали обычной практикой, меняться должна не только наша привычка, но и сама индустрия.</p>
+</div>
+
+<!-- НЕ ТОЛЬКО ГАРДЕРОБ -->
+<section id="industry" class="loc loc--industry" data-loc="industry" data-accent="#8BC83D" data-label="НЕ ТОЛЬКО ГАРДЕРОБ">
+  <div class="loc__inner">
+    <p class="mono acc kick reveal">НЕ ТОЛЬКО ГАРДЕРОБ</p>
+    <h2 class="h-sci reveal">Циркулярная мода — это ещё и бизнес</h2>
+    <div class="intro reveal">
+      <p>В циркулярной моде бизнес может зарабатывать не только на продаже новой одежды. Перепродажа, аренда, ремонт и переделка помогают вещам дольше оставаться в использовании.</p>
+      <div class="sxs"><button class="sx" data-src="S05">S05</button></div>
+    </div>
+
+    <h3 class="spread reveal">Как работает новая модель бизнеса?</h3>
+    <div class="cards2">
+      <article class="panel card reveal"><h4>Как растёт рынок второй жизни одежды</h4><div class="card__big">$<span class="count" data-to="700">0</span> млрд</div><p>По прогнозу Ellen MacArthur Foundation, опубликованному в 2021 году, к 2030 году рынок аренды, перепродажи, ремонта и переделки одежды может вырасти до 700 млрд долларов — около 23% мирового рынка моды.</p><div class="sxs"><button class="sx" data-src="S05">S05</button> <button class="sx" data-src="S06">S06</button></div></article>
+      <article class="panel card reveal"><h4>Вещам можно продлить жизнь</h4><p>В программе Patagonia Worn Wear можно отремонтировать вещь, приобрести одежду с историей или сдать старую вещь за кредит на покупку.</p><div class="sxs"><button class="sx" data-src="S16">S16</button></div></article>
+    </div>
+
+    <h3 class="spread reveal">Как читать заявления компаний?</h3>
+    <div class="cards2">
+      <article class="panel card reveal"><h4>Сколько переработанного сырья использует бренд?</h4><div class="card__big"><span class="count" data-to="32">0</span>%</div><div class="bar" aria-hidden="true"><i style="--w:32%"></i></div><p>По данным H&amp;M Group, в 2025 году переработанные материалы составляли 32% материалов, использованных компанией, против 29,5% в 2024 году.</p><div class="sxs"><button class="sx" data-src="S07">S07</button> <button class="sx" data-src="S08">S08</button></div></article>
+      <article class="panel card reveal"><h4>Почему 91% — не доля переработанного сырья?</h4><div class="card__big"><span class="count" data-to="91">0</span>%</div><div class="bar bar--split" aria-hidden="true"><i style="--w:32%"></i><b style="--w:59%"></b></div><p>H&amp;M также относит 91% используемых материалов к переработанным или соответствующим требованиям компании к происхождению. Это не значит, что 91% материалов переработаны: доля именно переработанного сырья составляет 32%.</p><div class="sxs"><button class="sx" data-src="S08">S08</button> <button class="sx" data-src="S09">S09</button></div></article>
+    </div>
+
+    <h2 class="h-sci h-sci--2 reveal">Меняются не только привычки, но и правила</h2>
+    <div class="intro reveal"><p>В Европе меняются не только привычки покупателей, но и правила для производителей и продавцов одежды. Новые меры касаются долговечности вещей и судьбы непроданных товаров.</p></div>
+    <div class="timeline reveal" id="timeline">
+      <div class="tl__track" aria-hidden="true"><i class="tl__fill"></i></div>
+      <div class="tl__items" id="tlItems"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 ФИНАЛ -->
+<section id="final" class="loc loc--final" data-loc="final" data-accent="#8BC83D" data-label="05 · THE SECOND LIFE">
+  <div class="loc__inner final">
+    <div class="final__head reveal">
+      <div class="sign mono"><b>→</b> 05 · ВЫХОД</div>
+      <h2 class="h-loc">THE SECOND<br>LIFE</h2>
+      <p class="sub">Что стало с гардеробом?</p>
+      <p class="final__text">Вещи могут продолжить свою историю по-разному: остаться в гардеробе, пройти ремонт, получить новый фасон или перейти к другому человеку. А собранный текстиль не всегда возвращается в виде новой одежды.</p>
+    </div>
+    <div class="ba reveal">
+      <div class="toggle mono" role="group" aria-label="До и после">
+        <button id="baBefore" aria-pressed="false">ДО</button>
+        <button id="baAfter" aria-pressed="true" class="is-on">ПОСЛЕ</button>
+      </div>
+      <div class="ba__frame" id="ba" style="--split:0%">
+        <div class="ba__layer ba__before"><div class="doll" id="dollBefore"></div></div>
+        <div class="ba__layer ba__after"><div class="doll" id="dollAfter"></div></div>
+        <div class="ba__handle" aria-hidden="true"></div>
+        <input class="ba__range" id="baRange" type="range" min="0" max="100" value="0" aria-label="Сравнить до и после">
+      </div>
+    </div>
+    <section class="ledger reveal" aria-label="Ведомость гардероба">
+      <p class="mono acc">ВЕДОМОСТЬ ГАРДЕРОБА</p>
+      <div id="ledger"></div>
+    </section>
+  </div>
+  <div class="loc__inner final2 reveal">
+    <ol class="concl">
+      <li>Дольше пользоваться вещью — важная часть циркулярной моды.</li>
+      <li>Ремонт, передача и переделка — не то же самое, что переработка в новое волокно.</li>
+      <li>Экологический результат зависит не только от покупателя, но и от бизнеса, инфраструктуры и правил.</li>
+    </ol>
+    <div>
+      <p class="finale">Не всякую вещь можно спасти. Не каждая переработка замыкает цикл. Но у одежды есть больше вариантов будущего, чем просто оказаться на свалке.</p>
+      <div class="final__btns">
+        <button class="btn btn--acc" id="restartBtn">Пройти историю заново</button>
+        <a class="btn" href="#sources">Источники и методология</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="loc__inner sources reveal" id="sources">
+    <div class="sources__about">
+      <h3>Источники и методология</h3>
+      <p>Проект основан на статье РУВИКИ «Циркулярная мода», актуализированной по выданному набору источников. Рядом с каждой цифрой — ссылка на источник.</p>
+      <p><a class="link" href="article.html" target="_blank" rel="noopener">Читать обновлённую статью →</a></p>
+      <p class="dim small">Видео, фоны, кукла и одежда созданы нейросетями командой проекта. Звук синтезируется в браузере.</p>
+    </div>
+    <ol class="src-list" id="srcList"></ol>
+  </div>
+</section>
+
+</main>
+<script src="script.js?v=b52df7b61d"></script>
+</body>
+</html>
